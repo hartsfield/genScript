@@ -22,6 +22,21 @@ func main() {
 	fmt.Println("App name established: " + appName)
 	script := genBashScript(evs, appName)
 	fmt.Println(script)
+	writeToFile(script)
+	fmt.Println("Written to 'restart-service.sh'")
+}
+
+func writeToFile(script string) {
+	f, err := os.OpenFile("access.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer f.Close()
+
+	if _, err = f.WriteString(script); err != nil {
+		log.Panic(err)
+	}
 }
 
 func findGoCode() (goFiles []string) {
