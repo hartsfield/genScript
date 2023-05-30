@@ -23,7 +23,8 @@ func main() {
 	script := genBashScript(evs, appName)
 	fmt.Println(script)
 	writeToFile(script)
-	fmt.Println("Written to 'restart-service.sh'")
+	fmt.Println("\n--------------------------------------")
+	fmt.Println("\nWritten to 'restart-service.sh'")
 }
 
 func writeToFile(script string) {
