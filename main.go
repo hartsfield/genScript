@@ -35,7 +35,8 @@ func writeToFile(script string) {
 	defer f.Close()
 
 	if len(readFile("./"+f.Name())) > 0 {
-		log.Fatal("restart-service.sh already exists")
+		fmt.Println("\n--------------------------------------")
+		log.Fatal("\nrestart-service.sh already exists")
 	}
 
 	if _, err = f.WriteString(script); err != nil {
