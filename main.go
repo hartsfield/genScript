@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -12,26 +14,34 @@ import (
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	linesOfGoCode := findGoCode()
+	evs := findEnvVars(linesOfGoCode)
+	spl := strings.Split(findGitOriginURL(), "/")
+	appName := strings.Split(spl[len(spl)-1], ".")[0]
+	fmt.Println("App name established: " + appName)
+	script := genBashScript(evs, appName)
+	log.Println("\n", script)
+}
+
+func findGoCode() (goFiles []string) {
+	fmt.Println("Looking for files ending in '.go' (non-recursive)")
 	entries, err := os.ReadDir("./")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var evs []string
 	for _, e := range entries {
 		if e.Name()[len(e.Name())-3:] == ".go" {
-			lines := readFile("./" + e.Name())
-			evs = findEnvVars(lines)
+			fmt.Println("Found go code: ", e.Name())
+			goFiles = append(goFiles, readFile("./"+e.Name())...)
 		}
 	}
-	spl := strings.Split(findGitOriginURL(), "/")
-	appName := strings.Split(spl[len(spl)-1], ".")[0]
-	script := genBashScript(evs, appName)
-	log.Println("\n", script)
-
+	return
 }
 
 func findGitOriginURL() (originURL string) {
+	fmt.Println("Attempting to establish app name based on git origin URL...")
 	lines := readFile("./.git/config")
 	for _, line := range lines {
 		if strings.Contains(line, "url = ") {
@@ -46,6 +56,7 @@ func findGitOriginURL() (originURL string) {
 }
 
 func genBashScript(envVars []string, appName string) (script string) {
+	fmt.Println("Generating bash script for " + appName + "...\n\n")
 	script = "#!/bin/bash"
 
 	for _, ev := range envVars {
@@ -79,6 +90,7 @@ func filterNonAlpha(inTokens []string) (alpha []string) {
 }
 
 func findEnvVars(lines []string) (envVars []string) {
+	fmt.Println("Looking for environment variable names set with os.Getenv()...")
 	for _, line := range lines {
 		line = strings.Join(strings.Fields(line), " ")
 		if strings.Contains(line, "os.Getenv(") {
@@ -89,8 +101,12 @@ func findEnvVars(lines []string) (envVars []string) {
 					envVars = append(envVars, strings.Split(en[1:], `"`)[0])
 				}
 			}
+		} else {
+			fmt.Println("Couldn't find and environment variables")
+			log.Fatal()
 		}
 	}
+	fmt.Println("Found " + strconv.Itoa(len(envVars)) + " environment variables")
 	return
 }
 
