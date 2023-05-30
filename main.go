@@ -79,7 +79,7 @@ func genBashScript(envVars []string, appName string) (script string) {
 	script = "#!/bin/bash"
 
 	for _, ev := range envVars {
-		script = script + "\n" + ev + "="
+		script = script + "\nexport " + ev + "="
 	}
 
 	script = script +
