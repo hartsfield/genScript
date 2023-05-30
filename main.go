@@ -28,12 +28,15 @@ func main() {
 }
 
 func writeToFile(script string) {
-	f, err := os.OpenFile("access.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile("restart-service.sh", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer f.Close()
+
+	if len(readFile("./"+f.Name())) > 0 {
+		log.Fatal("restart-service.sh already exists")
+	}
 
 	if _, err = f.WriteString(script); err != nil {
 		log.Panic(err)
