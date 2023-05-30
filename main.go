@@ -21,7 +21,7 @@ func main() {
 	appName := strings.Split(spl[len(spl)-1], ".")[0]
 	fmt.Println("App name established: " + appName)
 	script := genBashScript(evs, appName)
-	log.Println("\n", script)
+	fmt.Println(script)
 }
 
 func findGoCode() (goFiles []string) {
