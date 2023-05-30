@@ -35,7 +35,11 @@ func findGitOriginURL() (originURL string) {
 	lines := readFile("./.git/config")
 	for _, line := range lines {
 		if strings.Contains(line, "url = ") {
-			originURL = "https://" + strings.Replace(strings.Split(line, "@")[1], ":", "/", 1)
+			if strings.Contains(line, "@") {
+				originURL = "https://" + strings.Replace(strings.Split(line, "@")[1], ":", "/", 1)
+			} else {
+				originURL = strings.Split(line, "rl = ")[1]
+			}
 		}
 	}
 	return
@@ -58,14 +62,6 @@ func genBashScript(envVars []string, appName string) (script string) {
 		"sleep 2"
 
 	return
-
-	// #!/bin/bash
-	// trap -- ” SIGTERM
-	// git pull
-	// go build -o $1
-	// pkill -f $1
-	// fullchain=$3 privkey=$4 nohup ./$1 > /dev/null & disown
-	// sleep 2
 }
 
 func filterNonAlpha(inTokens []string) (alpha []string) {
