@@ -101,10 +101,12 @@ func findEnvVars(lines []string) (envVars []string) {
 					envVars = append(envVars, strings.Split(en[1:], `"`)[0])
 				}
 			}
-		} else {
-			fmt.Println("Couldn't find and environment variables")
-			log.Fatal()
 		}
+	}
+	if len(envVars) <= 0 {
+		fmt.Println("Couldn't find any environment variables")
+		log.Fatal()
+		return
 	}
 	fmt.Println("Found " + strconv.Itoa(len(envVars)) + " environment variables")
 	return
